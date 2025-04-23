@@ -280,7 +280,7 @@ onBeforeUnmount(() => {
                     <div class="flex">
                       <Switch
                         v-model="showGraph"
-                        :class="showGraph ? 'bg-text' : 'bg-kblue-600'"
+                        :class="showGraph ? 'bg-text' : 'bg-primary'"
                         class="relative inline-flex h-[30px] w-[66px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
                       >
                         <span class="sr-only text">Use setting</span>
