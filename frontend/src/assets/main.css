@@ -13,72 +13,46 @@
   --vt-c-black-soft: var(--color-kblue-400);
   --vt-c-black-mute: var(--color-kblue-200);
 
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-
   --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
   --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
 
-  --vt-c-text-light-1: rgba(32, 31, 31, 0.66);
-  --vt-c-text-light-2: rgba(90, 88, 88, 0.801);
-
   --vt-c-text-dark-1: rgba(228, 220, 220, 0.548);
   --vt-c-text-dark-2: rgba(255, 255, 255, 0.849);
-}
 
-/* semantic color variables for this project */
-:root {
-  --color-background-hard: var(--vt-c-white-hard);
-  --color-background: var(--vt-c-white);
-  --color-background-soft: var(--vt-c-white-soft);
-  --color-background-mute: var(--vt-c-white-mute);
+  --color-background-hard: var(--vt-c-black-hard);
+  --color-background: var(--vt-c-black);
+  --color-background-soft: var(--vt-c-black-soft);
+  --color-background-mute: var(--vt-c-black-mute);
 
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
+  --color-border: var(--vt-c-divider-dark-2);
+  --color-border-hover: var(--vt-c-divider-dark-1);
 
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
-  --color-text-hover: var(--vt-c-text-light-2);
+  --color-heading: var(--vt-c-text-dark-1);
+  --color-text: var(--vt-c-text-dark-2);
+  --color-text-hover: var(--vt-c-text-dark-1);
+
+  --color-primary: var(--color-kblue-600);
+  --color-primary-hover: var(--color-kblue-400);
+
+  --color-secondary: var(--color-kblue-300);
+  --color-secondary-hover: var(--color-kblue-400);
+
+  --color-tertiary: var(--color-kblue-200);
+  --color-tertiary-hover: var(--color-kblue-300);
+
+  --color-info: var(--color-kblue-400);
+  --color-info-hover: var(--color-kblue-300);
+
+  --color-accent: var(--color-kblue-50);
+  --color-accent-hover: var(--color-kblue-200);
+
+  --color-text-primary: var(--color-kblue-800);
+  --color-text-secondary: var(--color-kblue-700);
 
   --section-gap: 160px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background-hard: var(--vt-c-black-hard);
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black-soft);
-    --color-background-mute: var(--vt-c-black-mute);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
-    --color-text-hover: var(--vt-c-text-dark-1);
-
-    --color-primary: var(--color-kblue-600);
-    --color-primary-hover: var(--color-kblue-400);
-
-    --color-secondary: var(--color-kblue-300);
-    --color-secondary-hover: var(--color-kblue-400);
-
-    --color-tertiary: var(--color-kblue-200);
-    --color-tertiary-hover: var(--color-kblue-300);
-
-    --color-info: var(--color-kblue-400);
-    --color-info-hover: var(--color-kblue-300);
-
-    --color-accent: var(--color-kblue-50);
-    --color-accent-hover: var(--color-kblue-200);
-
-    --color-text-primary: var(--color-kblue-800);
-    --color-text-secondary: var(--color-kblue-700);
-  }
-}
-
 @theme {
-  --color-kblue-50: oklch(77.725% 0.13804 231.95);
   --color-kblue-50: oklch(77.725% 0.13804 231.95);
   --color-kblue-100: oklch(75.937% 0.14728 233.52);
   --color-kblue-200: oklch(72.562% 0.16139 238.43);
