@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
-// routeNames.js
 export const ROUTE_NAMES = {
   HOME: 'home',
   ABOUT: 'about',
