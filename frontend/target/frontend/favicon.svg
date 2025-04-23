@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="17.224937mm"
+   height="18.08884mm"
+   viewBox="0 0 17.224937 18.08884"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="66.117261"
+     inkscape:cx="32.366737"
+     inkscape:cy="34.227068"
+     inkscape:window-width="1916"
+     inkscape:window-height="1031"
+     inkscape:window-x="1920"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-83.158006,-85.067476)">
+    <g
+       aria-label="kunai"
+       transform="matrix(1.6590344,0.00606985,-0.0064948,1.7751828,152.54452,-247.03821)"
+       id="text16506-7-7"
+       style="font-size:11.0615px;font-family:Joystix;-inkscape-font-specification:Joystix;display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.246484;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="kunai-text">
+      <path
+         id="path4490-8-1"
+         style="font-family:'Korner Deli NF';-inkscape-font-specification:'Korner Deli NF';display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.246484;stroke-dasharray:none;stroke-opacity:1"
+         d="m -36.344523,189.60554 -0.626168,1.39897 1.681823,-0.006 0.623718,-1.39345 z m 3.446442,-2.9e-4 -1.645249,1.39096 2.07931,-0.007 1.642141,-1.38396 z m -4.508889,2.37393 -2.319753,5.18153 1.678473,2.6e-4 1.046455,-2.33759 1.15977,-0.98614 c 0.188298,-0.0999 0.367737,-0.15524 0.54445,-0.15524 0.452825,0 0.601555,0.43211 0.598594,0.80878 l -0.01348,2.67027 1.833496,-2.7e-4 0.0068,-3.34568 c 0.0059,-0.75334 -0.0968,-1.57331 -0.756975,-1.85025 l 0.0056,10e-4 -2.075578,0.007 c -0.0089,0.004 -0.01779,0 -0.02666,0 z"
+         inkscape:export-filename="../../../../Documentations/kunai/kunai-doc/static/img/kunai-social-card.png"
+         inkscape:export-xdpi="215.80144"
+         inkscape:export-ydpi="215.80144"
+         inkscape:label="path4490-8"
+         sodipodi:nodetypes="cccccccccccccccsccccccccc" />
+    </g>
+    <path
+       style="display:inline;mix-blend-mode:normal;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.300416;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 91.819997,89.275397 0.453151,-4.057746 -5.262406,6.323749 0.856361,2.169133 -3.426648,7.895427 c -0.422703,-0.18715 -0.90302,-0.095 -1.083436,0.36273 -0.128684,0.3171 -0.0077,0.80419 0.452302,0.99669 0.501328,0.14993 0.853903,-0.13329 0.985574,-0.42305"
+       id="path3415-5-3"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:label="kunai-shape" />
+  </g>
+</svg>

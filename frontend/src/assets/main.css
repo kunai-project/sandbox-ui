@@ -1,0 +1,168 @@
+@import './base.css';
+@import 'tailwindcss';
+
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --vt-c-white-hard: var(--color-kblue-300);
+  --vt-c-white: var(--color-kblue-200);
+  --vt-c-white-soft: var(--color-kblue-100);
+  --vt-c-white-mute: var(--color-kblue-50);
+
+  --vt-c-black-hard: var(--color-kblue-600);
+  --vt-c-black: var(--color-kblue-500);
+  --vt-c-black-soft: var(--color-kblue-400);
+  --vt-c-black-mute: var(--color-kblue-200);
+
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --vt-c-text-light-1: rgba(32, 31, 31, 0.66);
+  --vt-c-text-light-2: rgba(90, 88, 88, 0.801);
+
+  --vt-c-text-dark-1: rgba(228, 220, 220, 0.548);
+  --vt-c-text-dark-2: rgba(255, 255, 255, 0.849);
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background-hard: var(--vt-c-white-hard);
+  --color-background: var(--vt-c-white);
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-text-light-1);
+  --color-text-hover: var(--vt-c-text-light-2);
+
+  --section-gap: 160px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background-hard: var(--vt-c-black-hard);
+    --color-background: var(--vt-c-black);
+    --color-background-soft: var(--vt-c-black-soft);
+    --color-background-mute: var(--vt-c-black-mute);
+
+    --color-border: var(--vt-c-divider-dark-2);
+    --color-border-hover: var(--vt-c-divider-dark-1);
+
+    --color-heading: var(--vt-c-text-dark-1);
+    --color-text: var(--vt-c-text-dark-2);
+    --color-text-hover: var(--vt-c-text-dark-1);
+
+    --color-primary: var(--color-kblue-600);
+    --color-primary-hover: var(--color-kblue-400);
+
+    --color-secondary: var(--color-kblue-300);
+    --color-secondary-hover: var(--color-kblue-400);
+
+    --color-tertiary: var(--color-kblue-200);
+    --color-tertiary-hover: var(--color-kblue-300);
+
+    --color-info: var(--color-kblue-400);
+    --color-info-hover: var(--color-kblue-300);
+
+    --color-accent: var(--color-kblue-50);
+    --color-accent-hover: var(--color-kblue-200);
+
+    --color-text-primary: var(--color-kblue-800);
+    --color-text-secondary: var(--color-kblue-700);
+  }
+}
+
+@theme {
+  --color-kblue-50: oklch(77.725% 0.13804 231.95);
+  --color-kblue-50: oklch(77.725% 0.13804 231.95);
+  --color-kblue-100: oklch(75.937% 0.14728 233.52);
+  --color-kblue-200: oklch(72.562% 0.16139 238.43);
+  --color-kblue-300: oklch(64.594% 0.14436 238.5);
+  --color-kblue-400: oklch(55.382% 0.12349 238.36);
+  --color-kblue-500: oklch(46.023% 0.10089 237.26);
+  --color-kblue-600: oklch(32.173% 0.06847 235.23);
+  --color-kblue-700: oklch(16.559% 0.03187 226.68);
+  --color-kblue-800: oklch(0% 0 none);
+  --color-kblue-900: oklch(0% 0 none);
+  --color-kblue-950: oklch(0% 0 none);
+  --color-kblue: var(--color-kblue-500);
+  --color-kblue-hover: var(--color-kblue-100);
+
+  --font-weight-bold: 1000;
+
+  --color-background-hard: var(--color-background-hard);
+  --color-background: var(--vt-c-black);
+  --color-background-soft: var(--vt-c-black-soft);
+  --color-background-mute: var(--vt-c-black-mute);
+
+  --color-border: var(--vt-c-divider-dark-2);
+  --color-border-hover: var(--vt-c-divider-dark-1);
+
+  --color-heading: var(--vt-c-text-dark-1);
+  --color-text: var(--vt-c-text-dark-2);
+  --color-text-hover: var(--vt-c-text-dark-1);
+
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  font-weight: normal;
+}
+
+a {
+  color: var(--color-accent);
+  font-weight: 650;
+}
+
+a:hover {
+  color: var(--color-text);
+}
+
+.icon {
+  background-color: transparent;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+.btn-tertiary {
+  background-color: var(--color-tertiary);
+  color: var(--color-text-primary);
+}
+
+.btn-tertiary:hover {
+  background-color: var(--color-tertiary-hover);
+}
+
+.btn-info {
+  background-color: var(--color-info);
+  color: var(--color-text-primary);
+}
+
+.btn-info:hover {
+  background-color: var(--color-info-hover);
+}
