@@ -1,0 +1,21 @@
+[tasks.build-frontend]
+workspace = false
+cwd = "frontend"
+command = "npm"
+args = ["run", "build"]
+
+[tasks.dev-frontend]
+workspace = false
+cwd = "frontend"
+command = "npm"
+args = ["run", "dev"]
+
+[tasks.run]
+workspace = false
+command = "cargo"
+args = ["run", "--bin", "sandbox-ui"]
+
+[tasks.dev-backend]
+workspace = false
+command = "cargo"
+args = ["watch", "-w", "backend/src", "-x", "make run"]
