@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { config } from '@/config'
 import { ROUTE_NAMES } from '@/router'
 import { lastAnalysisByHash } from '@/utils'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import SandboxListbox from './SandboxListbox.vue'
 import ToolTip from './ToolTip.vue'
+import { api, apiRequest, fetchAPI } from '@/api'
 
 const sandboxListBox = ref<InstanceType<typeof SandboxListbox> | null>(null)
 
@@ -50,22 +50,13 @@ async function postAnalysis() {
     }
   }
 
-  try {
-    const response = await fetch(config.api.upload, {
-      method: 'POST',
-      body: formData,
-    })
+  const uuid = await fetchAPI<string>(
+    apiRequest(api.endpoints.analyze, undefined, undefined, formData),
+  )
 
-    if (response.ok) {
-      const data = await response.json()
-      const uuid: string = data['data']
-      router.push({ name: ROUTE_NAMES.ANALYSIS, params: { uuid: uuid } })
-      resetForm()
-    } else {
-      alert('Submission failed')
-    }
-  } catch (error) {
-    console.error('Upload failed:', error)
+  if (uuid) {
+    router.push({ name: ROUTE_NAMES.ANALYSIS, params: { uuid: uuid } })
+    resetForm()
   }
 }
 

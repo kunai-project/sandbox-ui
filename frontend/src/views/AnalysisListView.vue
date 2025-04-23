@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import PageView from './PageView.vue'
-import { config } from '@/config'
 import { ROUTE_NAMES } from '@/router'
 import { useRoute } from 'vue-router'
-import { fetchAPI } from '@/utils'
+import { apiUrl, api, fetchAPI } from '@/api'
 
 const lastAnalyses = ref<[Analysis] | null>(null)
 const pageNum = ref<number>(0)
@@ -41,7 +40,9 @@ async function fetchData(offset: number) {
     params.append('hash', hash)
   }
 
-  const analysis = await fetchAPI<[Analysis]>(`${config.api.listAnalysis}?${params.toString()}`)
+  const analysis = await fetchAPI<[Analysis]>(
+    apiUrl(api.endpoints.analysesSearch, undefined, params),
+  )
 
   if (!analysis) {
     return

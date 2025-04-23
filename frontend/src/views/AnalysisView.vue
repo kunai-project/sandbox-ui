@@ -8,7 +8,7 @@ import ToolTip from '@/components/ToolTip.vue'
 import AnalysisNotFound from '@/components/AnalysisNotFound.vue'
 import { ROUTE_NAMES } from '@/router'
 import { useRouter } from 'vue-router'
-import { fetchAPI } from '@/utils'
+import { api, apiUrl, fetchAPI } from '@/api'
 
 const props = defineProps<{
   uuid: string // TypeScript type for UUID
@@ -28,7 +28,10 @@ let intervalId: number | undefined
 // Function to fetch data from the API
 const fetchData = async () => {
   try {
-    const status_res = await fetchAPI<string>(`/api/analysis/${props.uuid}/status`) // Replace with your API URL
+    const path_params = { uuid: props.uuid }
+    const status_res = await fetchAPI<string>(
+      apiUrl(api.endpoints.analysisStatus, path_params, undefined),
+    ) // Replace with your API URL
 
     if (status_res) {
       status.value = status_res // Adjust based on your API response
@@ -47,7 +50,7 @@ const fetchData = async () => {
 
       if (status.value == 'terminated') {
         const metadata_res = await fetchAPI<{ [key: string]: object }>(
-          `/api/analysis/${props.uuid}/metadata`,
+          apiUrl(api.endpoints.analysisMetadata, path_params),
         )
 
         if (metadata_res) {
@@ -56,8 +59,9 @@ const fetchData = async () => {
         }
 
         const sandbox_res = await fetchAPI<{ [key: string]: string }>(
-          `/api/analysis/${props.uuid}/sandbox`,
+          apiUrl(api.endpoints.analysisSandbox, path_params),
         )
+
         if (sandbox_res) {
           sandbox.value = sandbox_res
         }
@@ -211,7 +215,14 @@ onBeforeUnmount(() => {
                   <template v-slot:data>
                     <ToolTip tip="Download pcap" position="bottom">
                       <template v-slot:content>
-                        <a :href="`/api/analysis/${uuid}/pcap`" :download="uuid + '.pcap'">
+                        <a
+                          :href="
+                            apiUrl(api.endpoints.analysisPcap, {
+                              uuid: props.uuid,
+                            })
+                          "
+                          :download="uuid + '.pcap'"
+                        >
                           <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
                         </a>
                       </template>
@@ -223,7 +234,10 @@ onBeforeUnmount(() => {
                   <template v-slot:data>
                     <ToolTip tip="Download Kunai logs" position="bottom">
                       <template v-slot:content>
-                        <a :href="`/api/analysis/${uuid}/logs`" :download="uuid + '.jsonl.gz'">
+                        <a
+                          :href="apiUrl(api.endpoints.analysisLogs, { uuid: props.uuid })"
+                          :download="uuid + '.jsonl.gz'"
+                        >
                           <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
                         </a>
                       </template>
@@ -235,7 +249,10 @@ onBeforeUnmount(() => {
                   <template v-slot:data>
                     <ToolTip tip="Download MISP event" position="bottom">
                       <template v-slot:content>
-                        <a :href="`/api/analysis/${uuid}/misp-event`" :download="uuid + '.json'">
+                        <a
+                          :href="apiUrl(api.endpoints.analysisMispEvent, { uuid: props.uuid })"
+                          :download="uuid + '.json'"
+                        >
                           <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
                         </a>
                       </template>
@@ -247,7 +264,10 @@ onBeforeUnmount(() => {
                   <template v-slot:data>
                     <ToolTip tip="Download Analysis Graph" position="bottom">
                       <template v-slot:content>
-                        <a :href="`/api/analysis/${uuid}/graph`" :download="uuid + '.svg'">
+                        <a
+                          :href="apiUrl(api.endpoints.analysisGraph, { uuid: props.uuid })"
+                          :download="uuid + '.svg'"
+                        >
                           <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
                         </a>
                       </template>
@@ -280,7 +300,10 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-if="dataReady" :hidden="!showGraph" class="flex justify-center py-10">
-        <AnalysisGraph class="flex w-2/3 aspect-[3/2]" :svgUrl="`/api/analysis/${uuid}/graph`" />
+        <AnalysisGraph
+          class="flex w-2/3 aspect-[3/2]"
+          :svgUrl="apiUrl(api.endpoints.analysisGraph, { uuid: props.uuid })"
+        />
       </div>
     </template>
   </PageView>

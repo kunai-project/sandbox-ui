@@ -54,8 +54,7 @@
 import { onMounted, ref } from 'vue'
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/24/outline'
-import { fetchAPI } from '@/utils'
-import { config } from '@/config'
+import { api, apiRequest, fetchAPI } from '@/api'
 
 interface Sandbox {
   name: string
@@ -73,7 +72,7 @@ defineExpose({
 })
 
 onMounted(async () => {
-  sandboxes.value = await fetchAPI(config.api.sandboxesList)
+  sandboxes.value = await fetchAPI(apiRequest(api.endpoints.sandboxList))
   if (sandboxes.value) {
     selectedSandbox.value = sandboxes.value[0]
   }

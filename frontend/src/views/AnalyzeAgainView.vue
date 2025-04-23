@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import PageView from './PageView.vue'
-import { config } from '@/config'
 import { ROUTE_NAMES } from '@/router'
-import { fetchAPI } from '@/utils'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import SandboxListbox from '@/components/SandboxListbox.vue'
 import ToolTip from '@/components/ToolTip.vue'
+import { api, apiRequest, fetchAPI } from '@/api'
 
 const props = defineProps<{
   uuid: string // TypeScript type for UUID
@@ -26,10 +25,7 @@ async function analyzeAgain() {
   }
 
   const uuid_opt = await fetchAPI<string>(
-    `${config.api.analyzeAgain}/${props.uuid}?${params.toString()}`,
-    {
-      method: 'POST',
-    },
+    apiRequest(api.endpoints.analyzeAgain, { uuid: props.uuid }, params),
   )
 
   if (uuid_opt) {

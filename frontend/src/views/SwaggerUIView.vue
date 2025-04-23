@@ -3,10 +3,10 @@ import { onMounted } from 'vue'
 import SwaggerUI from 'swagger-ui-dist/swagger-ui-es-bundle'
 import 'swagger-ui-dist/swagger-ui.css'
 import PageView from './PageView.vue'
-import { fetchAPI } from '@/utils'
+import { api, apiRequest, fetchAPI } from '@/api'
 
 onMounted(async () => {
-  let openapi = await fetchAPI<{ [key: string]: object }>('/api/openapi/json')
+  let openapi = await fetchAPI<{ [key: string]: object }>(apiRequest(api.endpoints.openApi))
 
   if (openapi) {
     openapi.servers = [
@@ -18,7 +18,6 @@ onMounted(async () => {
 
   SwaggerUI({
     dom_id: '#swagger-ui',
-    //url: '/api/openapi/json', // Make sure your OpenAPI spec is accessible
     spec: openapi,
   })
 })

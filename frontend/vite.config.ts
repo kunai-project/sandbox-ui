@@ -8,25 +8,20 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  build:{
+  build: {
     outDir: process.env.OUTPUT_DIR || 'dist',
     emptyOutDir: true,
   },
-  plugins: [
-    vue(),
-    vueJsx(),
-    vueDevTools(),
-    tailwindcss(),
-  ],
+  plugins: [vue(), vueJsx(), vueDevTools(), tailwindcss()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000', // URL of your Rust backend
+        target: 'http://localhost:8000', // URL of Rust backend
         changeOrigin: true,
         secure: false,
       },
