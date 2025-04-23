@@ -1,0 +1,38 @@
+[package]
+name = "sandbox-ui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rocket = { version = "0.5.1", features = ["json"] }
+tokio = { version = "1.44.0", features = ["fs"] }
+serde = { version = "1.0", features = ["derive"] }
+clap = { version = "4.5.32", features = ["derive"] }
+serde_yaml = "0.9.34"
+anyhow = "1.0.97"
+uuid = { version = "1.15.1", features = ["serde", "v4"] }
+md-5 = "0.10.6"
+sha1 = "0.10.6"
+sha2 = "0.10.8"
+hex = "0.4.3"
+serde_json = "1.0.140"
+rust-embed = { version = "8.6.0", features = ["compression"] }
+log = "0.4.26"
+chrono = { version = "0.4.40", features = ["serde"] }
+migration = { path = "../migration" }
+sea-orm = { version = "1.1.7", features = ["runtime-tokio", "sqlx-sqlite"] }
+thiserror = "2.0.12"
+utoipa = { version = "5.3.1", features = [
+    "chrono",
+    "preserve_path_order",
+    "rocket_extras",
+    "time",
+    "uuid",
+] }
+
+[profile.release]
+lto = true
+opt-level = "z"
+codegen-units = 1
+strip = true
+debug = false
