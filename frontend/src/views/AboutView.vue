@@ -24,8 +24,9 @@ import { config } from '@/config'
             <ul class="list-disc text-xl pl-10">
               <li>Make detection engineers' lives easier</li>
               <li>
-                Enable the community to <b class="font-semibold">share</b>
-                <a :href="config.kunaiLink">Kunai</a> traces
+                Enable the community to <b class="font-semibold">share </b>
+                <a :href="config.kunaiLink">Kunai</a>
+                traces
               </li>
             </ul>
 
