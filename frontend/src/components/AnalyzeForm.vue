@@ -5,11 +5,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import SandboxListbox from './SandboxListbox.vue'
 import ToolTip from './ToolTip.vue'
-import { api, apiRequest, fetchAPI } from '@/api'
+import { api, apiRequest, fetchAPI, type Analysis } from '@/api'
 
 const sandboxListBox = ref<InstanceType<typeof SandboxListbox> | null>(null)
 
-const lastAnalysisUuid = ref<string | null>(null)
+const lastAnalysisUuid = ref<Analysis | null>(null)
 const file = ref<File | null>(null)
 const previewUrl = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -34,7 +34,7 @@ async function handleFileChange(event: Event) {
 
 function goToLastAnalysis() {
   if (lastAnalysisUuid.value) {
-    router.push({ name: ROUTE_NAMES.ANALYSIS, params: { uuid: lastAnalysisUuid.value } })
+    router.push({ name: ROUTE_NAMES.ANALYSIS, params: { uuid: lastAnalysisUuid.value.uuid } })
   }
 }
 
