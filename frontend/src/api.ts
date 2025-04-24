@@ -1,3 +1,50 @@
+// Define the AnalysisStatus enum
+export enum AnalysisStatus {
+  Unqueued = 'unqueued',
+  Queued = 'queued',
+  Running = 'running',
+  Terminated = 'terminated',
+  Failed = 'failed',
+}
+
+// Define the Sample interface
+export interface Sample {
+  uuid: string
+  md5: string
+  sha1: string
+  sha256: string
+  sha512: string
+}
+
+// Define the Analysis interface
+export interface Analysis {
+  uuid: string
+  date: string // ISO 8601 date-time string
+  status: AnalysisStatus
+  sample?: Sample | null
+  submission_name?: string | null
+}
+
+// Define the Metadata interface
+export interface Metadata {
+  md5: string
+  sha1: string
+  sha256: string
+  sha512: string
+  size: number
+  analysis_date?: string | null // ISO 8601 date-time string
+  magic?: string | null
+  submission_name?: string | null
+}
+
+// Define the Sandbox interface
+export interface Sandbox {
+  name: string
+  arch: string
+  kernel: string
+  distribution: string
+}
+
 // Define a type for API methods
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 

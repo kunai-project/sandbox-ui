@@ -8,7 +8,7 @@ import ToolTip from '@/components/ToolTip.vue'
 import AnalysisNotFound from '@/components/AnalysisNotFound.vue'
 import { ROUTE_NAMES } from '@/router'
 import { useRouter } from 'vue-router'
-import { api, apiUrl, fetchAPI } from '@/api'
+import { AnalysisStatus, api, apiUrl, fetchAPI } from '@/api'
 import {
   ArrowDownTrayIcon,
   ArrowPathRoundedSquareIcon,
@@ -34,7 +34,7 @@ let intervalId: number | undefined
 const fetchData = async () => {
   try {
     const path_params = { uuid: props.uuid }
-    const status_res = await fetchAPI<string>(
+    const status_res = await fetchAPI<AnalysisStatus>(
       apiUrl(api.endpoints.analysisStatus, path_params, undefined),
     ) // Replace with your API URL
 
@@ -42,9 +42,9 @@ const fetchData = async () => {
       status.value = status_res // Adjust based on your API response
       // if analysis is terminated or uuid is not known
       if (
-        status.value == 'terminated' ||
-        status.value == 'failed' ||
-        status.value == 'unqueued' ||
+        status.value == AnalysisStatus.Terminated ||
+        status.value == AnalysisStatus.Failed ||
+        status.value == AnalysisStatus.Unqueued ||
         status.value == null
       ) {
         finished.value = true
@@ -53,7 +53,7 @@ const fetchData = async () => {
         }
       }
 
-      if (status.value == 'terminated') {
+      if (status.value == AnalysisStatus.Terminated) {
         const metadata_res = await fetchAPI<{ [key: string]: object }>(
           apiUrl(api.endpoints.analysisMetadata, path_params),
         )
@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
             ></div>
           </div>
 
-          <div v-if="finished && status == 'unqueued'" class="pt-4">
+          <div v-if="finished && status == AnalysisStatus.Unqueued" class="pt-4">
             <p class="text-2xl">
               There was no space in the queue you can
               <a

@@ -54,14 +54,7 @@
 import { onMounted, ref } from 'vue'
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/24/outline'
-import { api, apiRequest, fetchAPI } from '@/api'
-
-interface Sandbox {
-  name: string
-  arch: string
-  kernel: string
-  distribution: string
-}
+import { api, apiRequest, fetchAPI, type Sandbox } from '@/api'
 
 const sandboxes = ref<Sandbox[] | null>(null)
 

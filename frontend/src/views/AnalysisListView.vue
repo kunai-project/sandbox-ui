@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import PageView from './PageView.vue'
 import { ROUTE_NAMES } from '@/router'
 import { useRoute } from 'vue-router'
-import { apiUrl, api, fetchAPI } from '@/api'
+import { apiUrl, api, fetchAPI, type Analysis } from '@/api'
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
 const lastAnalyses = ref<[Analysis] | null>(null)
@@ -12,22 +12,6 @@ const offset = ref<number>(0)
 const noMoreData = ref<boolean>(false)
 const limit: number = 10
 const route = useRoute()
-
-interface Sample {
-  uuid: string
-  md5: string
-  sha1: string
-  sha256: string
-  sha512: string
-}
-
-interface Analysis {
-  uuid: string
-  date: string
-  submission_name: string
-  status: string
-  sample: Sample
-}
 
 // Function to fetch data from the API
 async function fetchData(offset: number) {
@@ -139,7 +123,7 @@ watch(
                 <td class="py-6 px-4 text-left font-semibold">{{ convertDate(item.date) }}</td>
                 <td class="py-6 px-4 text-left">{{ item.submission_name }}</td>
                 <td class="py-6 px-4 text-left font-semibold">{{ item.status }}</td>
-                <td class="py-6 px-4 text-left">{{ item.sample.sha1 }}</td>
+                <td class="py-6 px-4 text-left">{{ item.sample?.sha1 }}</td>
                 <td class="py-6 px-4 text-left">
                   <router-link :to="{ name: ROUTE_NAMES.ANALYSIS, params: { uuid: item.uuid } }">{{
                     item.uuid
