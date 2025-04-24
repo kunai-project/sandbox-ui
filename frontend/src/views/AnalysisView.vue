@@ -9,6 +9,11 @@ import AnalysisNotFound from '@/components/AnalysisNotFound.vue'
 import { ROUTE_NAMES } from '@/router'
 import { useRouter } from 'vue-router'
 import { api, apiUrl, fetchAPI } from '@/api'
+import {
+  ArrowDownTrayIcon,
+  ArrowPathRoundedSquareIcon,
+  ArrowTopRightOnSquareIcon,
+} from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
   uuid: string // TypeScript type for UUID
@@ -133,22 +138,22 @@ onBeforeUnmount(() => {
         </div>
 
         <div v-if="dataReady" class="flex items-center">
-          <p class="text-3xl">Kunai Sandbox Analysis Report</p>
-          <ToolTip tip="Re-analyze file" position="bottom">
-            <template v-slot:content>
-              <button
-                @click="
-                  router.push({ name: ROUTE_NAMES.ANALYZE_AGAIN, params: { uuid: props.uuid } })
-                "
-                class="flex text-3xl -z-10"
-              >
-                <font-awesome-icon
-                  icon="fa-solid fa-rotate-right"
-                  class="icon pl-4 hover:text-text-hover"
-                />
-              </button>
-            </template>
-          </ToolTip>
+          <p class="text-3xl flex items-center">
+            Kunai Sandbox Analysis Report &nbsp;
+
+            <ToolTip tip="Re-analyze file" position="bottom">
+              <template v-slot:content>
+                <button
+                  @click="
+                    router.push({ name: ROUTE_NAMES.ANALYZE_AGAIN, params: { uuid: props.uuid } })
+                  "
+                  class="h-full flex"
+                >
+                  <ArrowPathRoundedSquareIcon class="h-10" />
+                </button>
+              </template>
+            </ToolTip>
+          </p>
         </div>
       </div>
 
@@ -200,11 +205,7 @@ onBeforeUnmount(() => {
                           class="font-bold"
                           :href="'https://www.virustotal.com/gui/file/' + metadata['sha256']"
                         >
-                          <font-awesome-icon
-                            icon="fa-solid fa-arrow-up-right-from-square"
-                            size="lg"
-                            class="icon"
-                          />
+                          <ArrowTopRightOnSquareIcon class="h-6" />
                         </a>
                       </template>
                     </ToolTip>
@@ -223,7 +224,7 @@ onBeforeUnmount(() => {
                           "
                           :download="uuid + '.pcap'"
                         >
-                          <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
+                          <ArrowDownTrayIcon class="h-6" />
                         </a>
                       </template>
                     </ToolTip>
@@ -238,7 +239,7 @@ onBeforeUnmount(() => {
                           :href="apiUrl(api.endpoints.analysisLogs, { uuid: props.uuid })"
                           :download="uuid + '.jsonl.gz'"
                         >
-                          <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
+                          <ArrowDownTrayIcon class="h-6" />
                         </a>
                       </template>
                     </ToolTip>
@@ -253,7 +254,7 @@ onBeforeUnmount(() => {
                           :href="apiUrl(api.endpoints.analysisMispEvent, { uuid: props.uuid })"
                           :download="uuid + '.json'"
                         >
-                          <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
+                          <ArrowDownTrayIcon class="h-6" />
                         </a>
                       </template>
                     </ToolTip>
@@ -268,7 +269,7 @@ onBeforeUnmount(() => {
                           :href="apiUrl(api.endpoints.analysisGraph, { uuid: props.uuid })"
                           :download="uuid + '.svg'"
                         >
-                          <font-awesome-icon icon="fa-solid fa-download" size="lg" class="icon" />
+                          <ArrowDownTrayIcon class="h-6" />
                         </a>
                       </template>
                     </ToolTip>

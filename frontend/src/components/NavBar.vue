@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { config } from '@/config.ts'
 import ToolTip from '@/components/ToolTip.vue'
 import { ROUTE_NAMES } from '@/router'
+import { Bars4Icon, QuestionMarkCircleIcon } from '@heroicons/vue/24/outline'
+import IconSwagger from './icons/IconSwagger.vue'
+import IconGithub from './icons/IconGithub.vue'
 
 const search = ref<string | null>(null)
 const router = useRouter()
@@ -43,55 +46,40 @@ async function handleEnter() {
       <!-- fill space in the middle -->
       <div class="flex flex-grow"></div>
 
-      <div class="flex h-full items-center pr-4">
+      <div class="flex h-2/3 pr-4">
         <ToolTip tip="All Analysis" position="bottom">
           <template v-slot:content>
             <router-link :to="{ name: ROUTE_NAMES.ANALYSIS_LIST }">
-              <font-awesome-icon
-                icon="fa-solid fa-bars"
-                class="icon text-text hover:text-text-hover"
-                size="2xl"
-              />
+              <Bars4Icon class="h-full text-text hover:text-text-hover" />
             </router-link>
           </template>
         </ToolTip>
       </div>
 
-      <div class="flex h-full items-center pr-4">
+      <div class="flex h-2/3 pr-4">
         <ToolTip tip="API Documentation" position="bottom">
           <template v-slot:content>
             <router-link :to="{ name: ROUTE_NAMES.SWAGGER_UI }">
-              <font-awesome-icon
-                :icon="['fac', 'swagger']"
-                class="icon text-text hover:text-text-hover"
-                size="2xl"
-              />
+              <IconSwagger class="h-full text-text hover:text-text-hover" />
             </router-link>
           </template>
         </ToolTip>
       </div>
 
-      <div class="pr-4 text-xl">
+      <div class="pr-4 h-2/3 flex">
         <ToolTip tip="About" position="bottom">
           <template v-slot:content>
             <router-link to="/about">
-              <font-awesome-icon
-                icon="fa-solid fa-question"
-                class="icon text-text hover:text-text-hover"
-                size="xl"
-              />
+              <QuestionMarkCircleIcon class="h-full text-text hover:text-text-hover" />
             </router-link>
           </template>
         </ToolTip>
       </div>
 
-      <div class="pr-8">
-        <a :href="config.sandboxUILink"
-          ><font-awesome-icon
-            icon="fa-brands fa-github"
-            size="2xl"
-            class="icon text-text hover:text-text-hover"
-        /></a>
+      <div class="pr-8 h-2/3 flex">
+        <a :href="config.sandboxUILink">
+          <IconGithub class="h-full text-text hover:text-text-hover" />
+        </a>
       </div>
     </div>
   </nav>

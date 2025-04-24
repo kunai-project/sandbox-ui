@@ -25,9 +25,9 @@ function isLeft(): boolean {
 <template>
   <div class="relative inline-block">
     <!-- Button -->
-    <div @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
+    <span @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
       <slot name="content"></slot>
-    </div>
+    </span>
 
     <!-- Tooltip (positioned below button) -->
     <div

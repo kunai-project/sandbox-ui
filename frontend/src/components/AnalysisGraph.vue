@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, nextTick } from 'vue'
 import SvgPanZoom from 'svg-pan-zoom'
 import svgPanZoom from 'svg-pan-zoom'
+import { ArrowsPointingOutIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{ svgUrl: string }>()
 const svgContainer = ref<HTMLElement | null>(null)
@@ -56,10 +57,10 @@ watch(() => props.svgUrl, fetchSvg)
   <div class="flex relative">
     <div class="absolute right-2 top-2 pl-2 flex items-center">
       <button
-        class="h-11 w-11 rounded-full font-medium bg-background-hard hover:bg-background"
+        class="h-11 w-11 px-2 py-2 rounded-full font-medium bg-background-hard hover:bg-background"
         @click="panZoomInstance?.fit() && panZoomInstance.center()"
       >
-        <font-awesome-icon icon="fa-solid fa-expand" size="lg" class="icon justify-center" />
+        <ArrowsPointingOutIcon class="" />
       </button>
     </div>
 

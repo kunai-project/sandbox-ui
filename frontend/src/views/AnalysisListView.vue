@@ -4,6 +4,7 @@ import PageView from './PageView.vue'
 import { ROUTE_NAMES } from '@/router'
 import { useRoute } from 'vue-router'
 import { apiUrl, api, fetchAPI } from '@/api'
+import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
 const lastAnalyses = ref<[Analysis] | null>(null)
 const pageNum = ref<number>(0)
@@ -150,14 +151,14 @@ watch(
 
           <div class="flex justify-center pt-4 pb-20">
             <div v-if="pageNum != 0">
-              <button @click="previousPage" class="rounded-lg px-4 py-2 btn-primary">
-                <font-awesome-icon icon="fa-solid fa-chevron-left" class="icon" />
+              <button @click="previousPage" class="rounded-lg px-2 py-2 btn-primary">
+                <ChevronLeftIcon class="h-6" />
               </button>
             </div>
 
             <div v-if="lastAnalyses?.length === limit && !noMoreData" class="px-2">
-              <button @click="nextPage" class="rounded-lg px-4 py-2 btn-primary">
-                <font-awesome-icon icon="fa-solid fa-chevron-right" class="icon" />
+              <button @click="nextPage" class="rounded-lg px-2 py-2 btn-primary">
+                <ChevronRightIcon class="h-6" />
               </button>
             </div>
           </div>
