@@ -76,7 +76,7 @@ async function handleEnter() {
         </ToolTip>
       </div>
 
-      <div class="pr-8 h-3/4 flex">
+      <div class="pr-4 h-3/4 flex">
         <a :href="config.sandboxUILink">
           <IconGithub class="h-full text-text hover:text-text-hover" />
         </a>
