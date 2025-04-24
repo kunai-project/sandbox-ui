@@ -1,5 +1,9 @@
 use std::{collections::HashMap, fs::File, path::PathBuf};
 
+use figment::{
+    Figment,
+    providers::{Format, Serialized, Yaml},
+};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -17,13 +21,16 @@ pub(crate) struct Config {
     pub(crate) data_dir: PathBuf,
     pub(crate) max_queue: usize,
     pub(crate) max_running: usize,
+    pub(crate) rocket: rocket::Config,
     #[serde(skip)]
     pub(crate) sandboxes: Vec<Sandbox>,
 }
 
 impl Config {
     pub(crate) fn from_reader<R: std::io::Read>(r: R) -> anyhow::Result<Self> {
-        let mut config: Config = serde_yaml::from_reader(r)?;
+        let mut config: Config = Figment::from(Serialized::defaults(Config::default()))
+            .merge(Yaml::string(&std::io::read_to_string(r)?))
+            .extract()?;
 
         let mut sbx = vec![];
 

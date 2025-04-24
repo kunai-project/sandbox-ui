@@ -756,6 +756,7 @@ async fn main() -> anyhow::Result<()> {
 
     let db = db::set_up_db(&api_config.database).await?;
     rocket::build()
+        .configure(api_config.rocket.clone())
         .manage(analyzer)
         .manage(api_config)
         .manage(db)
