@@ -23,30 +23,30 @@ async function handleEnter() {
 </script>
 
 <template>
-  <nav class="bg-background-hard left-0 w-screen fixed z-50">
-    <div class="flex items-center h-14 w-full">
+  <nav class="bg-background-hard left-0 w-screen fixed z-50 h-14">
+    <div class="flex items-center h-full w-full">
       <!-- Set a larger height here -->
       <!-- Logo Section -->
-      <div class="pl-4 flex">
-        <router-link to="/"><img src="@/assets/logo.svg" class="h-10" alt="Logo" /></router-link>
+      <div class="pl-4 flex h-3/4 py-1">
+        <router-link to="/"><img src="@/assets/logo.svg" class="h-full" alt="Logo" /></router-link>
       </div>
 
       <!-- Search Input Section -->
-      <div class="flex w-128 px-4">
+      <div class="flex h-3/4 py-1 w-128 px-4 items-center">
         <input
           @change="handleInputChange"
           @keyup.enter="handleEnter"
           v-model="search"
           type="text"
           placeholder="Search by hash"
-          class="w-full max-w-md h-10 px-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-background"
+          class="w-full max-w-md h-full px-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-background"
         />
       </div>
 
       <!-- fill space in the middle -->
       <div class="flex flex-grow"></div>
 
-      <div class="flex h-2/3 pr-4">
+      <div class="flex h-3/4 pr-4">
         <ToolTip tip="All Analysis" position="bottom">
           <template v-slot:content>
             <router-link :to="{ name: ROUTE_NAMES.ANALYSIS_LIST }">
@@ -56,17 +56,17 @@ async function handleEnter() {
         </ToolTip>
       </div>
 
-      <div class="flex h-2/3 pr-4">
+      <div class="flex h-3/4 pr-4">
         <ToolTip tip="API Documentation" position="bottom">
           <template v-slot:content>
             <router-link :to="{ name: ROUTE_NAMES.SWAGGER_UI }">
-              <IconSwagger class="h-full text-text hover:text-text-hover" />
+              <IconSwagger class="text-text hover:text-text-hover" />
             </router-link>
           </template>
         </ToolTip>
       </div>
 
-      <div class="pr-4 h-2/3 flex">
+      <div class="pr-4 h-3/4 flex">
         <ToolTip tip="About" position="bottom">
           <template v-slot:content>
             <router-link to="/about">
@@ -76,7 +76,7 @@ async function handleEnter() {
         </ToolTip>
       </div>
 
-      <div class="pr-8 h-2/3 flex">
+      <div class="pr-8 h-3/4 flex">
         <a :href="config.sandboxUILink">
           <IconGithub class="h-full text-text hover:text-text-hover" />
         </a>
