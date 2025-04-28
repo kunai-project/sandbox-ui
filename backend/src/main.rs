@@ -713,10 +713,10 @@ async fn main() -> anyhow::Result<()> {
         );
         let c = Config {
             kunai_sandbox_exe: PathBuf::from("change_me"),
-            database: format!(
-                "sqlite://{}",
-                data_dir.join("database.sqlite3").to_string_lossy()
-            ),
+            database: data_dir
+                .join("database.sqlite")
+                .to_string_lossy()
+                .to_string(),
             sandboxes_config: sbx_config,
             default_sandbox_name: "some-sandbox-name".into(),
             data_dir,
