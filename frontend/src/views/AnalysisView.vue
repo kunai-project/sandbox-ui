@@ -135,6 +135,24 @@ onBeforeUnmount(() => {
               >later
             </p>
           </div>
+
+          <div
+            v-if="finished && status == AnalysisStatus.Failed"
+            class="flex pt-4 w-1/2 items-center justify-center"
+          >
+            <p class="text-2xl text-center">
+              Your analysis may have failed for several reasons, you can try to
+              <a
+                :href="
+                  router.resolve({ name: ROUTE_NAMES.ANALYZE_AGAIN, params: { uuid: props.uuid } })
+                    .href
+                "
+              >
+                re-launch it
+              </a>
+              but if failure persists, please contact us.
+            </p>
+          </div>
         </div>
 
         <div v-if="dataReady" class="flex items-center">
