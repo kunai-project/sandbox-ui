@@ -28,7 +28,8 @@ use uuid::Uuid;
 
 use anyhow::anyhow;
 use clap::builder::styling;
-use clap::{CommandFactory, FromArgMatches, Parser};
+use clap::{CommandFactory, FromArgMatches, Parser, Subcommand};
+use fs_walk::{self, WalkOptions};
 use rocket::form::Form;
 use rocket::fs::{NamedFile, TempFile};
 use rocket::serde::json::Json;
@@ -663,13 +664,146 @@ async fn catch_all(path: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
 
 #[derive(Parser)]
 struct Cli {
+    #[clap(subcommand)]
+    command: Command,
+}
+
+#[derive(Parser)]
+struct RunOpts {
     /// Application configuration file
     #[arg(short, long, env = "APP_CONFIG")]
     config: Option<PathBuf>,
+}
 
-    /// Dump a configuration file example
+#[derive(Parser)]
+struct ConfigOpts {
+    /// Directory to store application data
     #[arg(long)]
-    dump_config: bool,
+    data_dir: Option<PathBuf>,
+    /// Path to the kunai-sandbox executable
+    #[arg(long)]
+    kunai_sandbox_exe: Option<PathBuf>,
+    /// Database path
+    #[arg(short, long)]
+    database: Option<PathBuf>,
+    /// Walk through directory looking for config.yaml files
+    #[arg(short, long)]
+    sandboxes_dir: Vec<PathBuf>,
+    /// Default sandbox name
+    #[arg(long)]
+    default_sandbox: Option<String>,
+    /// Size of the analysis queue
+    #[arg(long, default_value_t = 128)]
+    queue_size: usize,
+    /// Max number of analysis running in parallel
+    #[arg(long, default_value_t = 4)]
+    max_running: usize,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    /// Build a configuration for the application and dump it on stdout
+    Config(ConfigOpts),
+    /// Run application
+    Run(RunOpts),
+}
+
+impl Command {
+    async fn run(o: RunOpts) -> anyhow::Result<()> {
+        let Some(config) = o.config else {
+            return Err(anyhow!("sandbox-ui needs a configuration file"));
+        };
+
+        let r = File::open(&config).map_err(|e| anyhow!("failed to open config file: {e}"))?;
+        let api_config: Config = Config::from_reader(r)?;
+
+        // configuration setup
+        std::fs::create_dir_all(api_config.analyses_dir())
+            .map_err(|e| anyhow!("failed to create analyses directory: {e}"))?;
+        std::fs::create_dir_all(api_config.samples_dir())
+            .map_err(|e| anyhow!("failed to create samples directory: {e}"))?;
+
+        let db = db::set_up_db(&api_config.database).await?;
+        let analyzer = Arc::new(Mutex::new(Analyzer::from_config_and_db(
+            api_config.clone(),
+            db,
+        )));
+
+        let c = analyzer.clone();
+        tokio::spawn(Analyzer::run(c));
+
+        let db = db::set_up_db(&api_config.database).await?;
+        rocket::build()
+            .configure(api_config.rocket.clone())
+            .manage(analyzer)
+            .manage(api_config)
+            .manage(db)
+            .mount(
+                API_MOUNTPOINT,
+                routes![
+                    openapi,
+                    analyze,
+                    analyze_again,
+                    analyses_search,
+                    analysis_status,
+                    analysis_metadata,
+                    analysis_sandbox,
+                    analysis_pcap,
+                    analysis_logs,
+                    analysis_graph,
+                    analysis_misp_event,
+                    sandbox_list
+                ],
+            )
+            .mount("/", routes![catch_all]) // we handle view routes not to hit API with it
+            .launch()
+            .await?;
+        Ok(())
+    }
+
+    fn config(o: ConfigOpts) -> anyhow::Result<()> {
+        let data_dir = o.data_dir.unwrap_or(PathBuf::from(".").join("app-data"));
+
+        let mut sbx_config = HashMap::new();
+
+        for dir in o.sandboxes_dir.iter() {
+            for p in WalkOptions::new()
+                .files()
+                .name("config.yaml")
+                .walk(dir)
+                .flatten()
+                .flat_map(|p| p.canonicalize())
+            {
+                if let Some(name) = p.parent().and_then(|p| p.file_name()) {
+                    sbx_config.insert(name.to_string_lossy().to_string(), p);
+                }
+            }
+        }
+
+        if sbx_config.is_empty() {
+            sbx_config.insert(
+                String::from("some-sandbox-name"),
+                PathBuf::from("/path/to/configuration"),
+            );
+        }
+
+        let c = Config {
+            kunai_sandbox_exe: o.kunai_sandbox_exe.unwrap_or(PathBuf::from("change_me")),
+            database: o.database.unwrap_or(data_dir.join("database.sqlite")),
+            sandboxes_config: sbx_config,
+            default_sandbox_name: o.default_sandbox.unwrap_or("some-sandbox-name".into()),
+            data_dir,
+            queue_size: o.queue_size,
+            max_running: o.max_running,
+            ..Default::default()
+        };
+
+        println!(
+            "{}",
+            serde_yaml::to_string(&c).map_err(|_| anyhow!("failed at serializing config"))?
+        );
+        Ok(())
+    }
 }
 
 #[derive(OpenApi)]
@@ -704,82 +838,8 @@ async fn main() -> anyhow::Result<()> {
     let cli: Cli =
         Cli::from_arg_matches(&c.get_matches()).map_err(|_| anyhow!("cli failed to parse args"))?;
 
-    if cli.dump_config {
-        let data_dir = PathBuf::from(".").join("app-data");
-        let mut sbx_config = HashMap::new();
-        sbx_config.insert(
-            String::from("some-sandbox-name"),
-            PathBuf::from("/path/to/configuration"),
-        );
-        let c = Config {
-            kunai_sandbox_exe: PathBuf::from("change_me"),
-            database: data_dir
-                .join("database.sqlite")
-                .to_string_lossy()
-                .to_string(),
-            sandboxes_config: sbx_config,
-            default_sandbox_name: "some-sandbox-name".into(),
-            data_dir,
-            max_queue: 8,
-            max_running: 4,
-            ..Default::default()
-        };
-
-        println!(
-            "{}",
-            serde_yaml::to_string(&c).map_err(|_| anyhow!("failed at serializing config"))?
-        );
-        return Ok(());
+    match cli.command {
+        Command::Config(o) => Command::config(o),
+        Command::Run(o) => Command::run(o).await,
     }
-
-    let Some(config) = cli.config else {
-        return Err(anyhow!("sandbox-ui needs a configuration file"));
-    };
-
-    let r = File::open(&config).map_err(|e| anyhow!("failed to open config file: {e}"))?;
-    let api_config: Config = Config::from_reader(r)?;
-
-    // configuration setup
-    std::fs::create_dir_all(api_config.analyses_dir())
-        .map_err(|e| anyhow!("failed to create analyses directory: {e}"))?;
-    std::fs::create_dir_all(api_config.samples_dir())
-        .map_err(|e| anyhow!("failed to create samples directory: {e}"))?;
-
-    let db = db::set_up_db(&api_config.database).await?;
-    let analyzer = Arc::new(Mutex::new(Analyzer::from_config_and_db(
-        api_config.clone(),
-        db,
-    )));
-
-    let c = analyzer.clone();
-    tokio::spawn(Analyzer::run(c));
-
-    let db = db::set_up_db(&api_config.database).await?;
-    rocket::build()
-        .configure(api_config.rocket.clone())
-        .manage(analyzer)
-        .manage(api_config)
-        .manage(db)
-        .mount(
-            API_MOUNTPOINT,
-            routes![
-                openapi,
-                analyze,
-                analyze_again,
-                analyses_search,
-                analysis_status,
-                analysis_metadata,
-                analysis_sandbox,
-                analysis_pcap,
-                analysis_logs,
-                analysis_graph,
-                analysis_misp_event,
-                sandbox_list
-            ],
-        )
-        .mount("/", routes![catch_all]) // we handle view routes not to hit API with it
-        .launch()
-        .await?;
-
-    Ok(())
 }

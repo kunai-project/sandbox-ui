@@ -14,12 +14,12 @@ use serde::de::Error;
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub(crate) struct Config {
-    pub(crate) database: String,
+    pub(crate) database: PathBuf,
     pub(crate) kunai_sandbox_exe: PathBuf,
     pub(crate) sandboxes_config: HashMap<String, PathBuf>,
     pub(crate) default_sandbox_name: String,
     pub(crate) data_dir: PathBuf,
-    pub(crate) max_queue: usize,
+    pub(crate) queue_size: usize,
     pub(crate) max_running: usize,
     pub(crate) rocket: rocket::Config,
     #[serde(skip)]

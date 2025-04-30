@@ -30,6 +30,7 @@ utoipa = { version = "5.3.1", features = [
     "uuid",
 ] }
 figment = { version = "0.10.19", features = ["yaml"] }
+fs-walk = "0.1"
 
 [profile.release]
 lto = true

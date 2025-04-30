@@ -393,7 +393,7 @@ impl Analyzer {
             .count(&self.db)
             .await
             .unwrap_or_default();
-        count >= self.config.max_queue as u64
+        count >= self.config.queue_size as u64
     }
 
     async fn last_queued_not_running(&self) -> Result<Option<Analysis>, AnalyzerError> {
