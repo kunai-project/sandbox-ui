@@ -39,8 +39,12 @@ FROM alpine:latest
 # Copy the built application from the builder stage
 COPY --from=builder /src/target/x86_64-unknown-linux-gnu/release/sandbox-ui /usr/local/bin/sandbox-ui
 
+
 # Install system tools
-RUN apk add vim curl python3 git
+RUN <<EOF
+apk update
+apk add vim curl python3 git
+EOF
 
 # Install tools required by kunai-sandbox and deps
 RUN apk add openssh tcpdump graphviz
@@ -56,7 +60,7 @@ RUN adduser -D sandbox-ui
 USER sandbox-ui
 
 # Install kunai-sandbox, version is hardcoded to avoid compatibility issues
-RUN uv tool install git+https://github.com/kunai-project/sandbox.git@v0.1.5
+RUN uv tool install git+https://github.com/kunai-project/sandbox.git@v0.1.6
 
 # Add uv tools path to PATH
 ENV PATH=$PATH:/home/sandbox-ui/.local/bin
