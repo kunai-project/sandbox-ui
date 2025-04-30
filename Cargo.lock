@@ -927,6 +927,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-walk"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a99b2af184b2f8f48bd0735323b1d7246b18df5345fb42242819319c71a42bf6"
+
+[[package]]
 name = "funty"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2482,6 +2488,7 @@ dependencies = [
  "chrono",
  "clap",
  "figment",
+ "fs-walk",
  "hex",
  "log",
  "md-5",
