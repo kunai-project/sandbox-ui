@@ -1,4 +1,4 @@
-<div align="center"><img src="frontend/src/assets/logo.svg" width="150"/></div>
+<div align="center"><img src="assets/logo.svg" width="150"/></div>
 
 # Kunai Sandbox UI
 
