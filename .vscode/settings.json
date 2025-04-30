@@ -1,0 +1,10 @@
+{
+  "eslint.format.enable": true,
+  "files.associations": { "*.css": "tailwindcss" },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
