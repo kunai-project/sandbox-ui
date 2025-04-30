@@ -43,6 +43,32 @@ cargo build-app
 # Build in release mode
 cargo build-app --release
 ```
+
+# Running the Application
+
+1. Install [kunai-sandbox](https://github.com/kunai-project/sandbox)
+2. Prepare some sandboxes (using the supported images) using `kunai-sandbox-init`
+3. The initialization script generates a `config.yaml` file for each prepared sandbox
+   yet the `analysis` section needs to be adjusted.
+```yaml
+...
+analysis:
+  timeout: 60
+  kunai:
+    # this must point to a valid kunai binary for that VM archictecture
+    path: /app-data/bin/kunai-amd64
+    # arguments to pass to kunai for each analysis
+    args: ["run", "--max-eps-fs=8096", "--max-buffered-events=2048", "--send-data-min-len=1", "--harden", "--include=all"]
+  tcpdump: 
+    filter: '! (net 10.0.2.0/24 and port ssh)'
+...
+``` 
+5. Create a configuration file for the application using `sandbox-ui config` command. The following settings need to be adjusted.
+     * configure `kunai_sandbox_exe` setting that must point to a valid `kunai-sandbox` path
+     * configure `sandboxes_config` with all sandboxes you want to use (each key is the sandbox name you will see in the UI)
+     * configure `default_sandbox_name` with the name of the default sandbox you want to application to use
+       
+6.You should be able to run the application with `sandbox-ui run -c /path/to/app-config.yaml`
     
 ## License
 
