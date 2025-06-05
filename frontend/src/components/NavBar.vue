@@ -7,6 +7,7 @@ import { ROUTE_NAMES } from '@/router'
 import { Bars4Icon, QuestionMarkCircleIcon } from '@heroicons/vue/24/outline'
 import IconSwagger from './icons/IconSwagger.vue'
 import IconGithub from './icons/IconGithub.vue'
+import IconKunai from './icons/IconKunai.vue'
 
 const search = ref<string | null>(null)
 const router = useRouter()
@@ -27,8 +28,10 @@ async function handleEnter() {
     <div class="flex items-center h-full w-full">
       <!-- Set a larger height here -->
       <!-- Logo Section -->
-      <div class="pl-4 flex h-3/4 py-1">
-        <router-link to="/"><img src="@/assets/logo.svg" class="h-full" alt="Logo" /></router-link>
+      <div class="pl-4 flex h-3/4">
+        <router-link to="/">
+          <IconKunai class="h-full" />
+        </router-link>
       </div>
 
       <!-- Search Input Section -->

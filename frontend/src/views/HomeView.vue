@@ -2,6 +2,7 @@
 import FileUpload from '@/components/AnalyzeForm.vue'
 import PageView from './PageView.vue'
 import { config } from '@/config'
+import IconKunai from '@/components/icons/IconKunai.vue'
 </script>
 
 <template>
@@ -10,7 +11,7 @@ import { config } from '@/config'
       <div class="flex items-center justify-center h-full pt-12">
         <div class="flex-col items-center">
           <div class="flex justify-center w-full h-40">
-            <img src="@/assets/logo.svg" class="mb-4 block" />
+            <IconKunai></IconKunai>
           </div>
 
           <p class="text-center text-xl w-full pt-4">
