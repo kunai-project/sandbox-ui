@@ -108,7 +108,7 @@ watch(
       </div>
       <div v-if="lastAnalyses" class="flex justify-center h-screen pt-12 px-6">
         <div class="flex-col items-center w-full overflow-x-auto" style="scrollbar-width: none">
-          <table>
+          <table class="w-full">
             <thead>
               <tr>
                 <th class="py-5 px-4 text-left">Date</th>
@@ -121,9 +121,13 @@ watch(
             <tbody class="divide-y">
               <tr v-for="(item, index) in lastAnalyses" :key="index">
                 <td class="py-6 px-4 text-left font-semibold">{{ convertDate(item.date) }}</td>
-                <td class="py-6 px-4 text-left">{{ item.submission_name }}</td>
+                <td class="py-6 px-4 text-left text-wrap max-w-40 truncate">
+                  {{ item.submission_name }}
+                </td>
                 <td class="py-6 px-4 text-left font-semibold">{{ item.status }}</td>
-                <td class="py-6 px-4 text-left">{{ item.sample?.sha1 }}</td>
+                <td class="py-6 px-4 text-left">
+                  {{ item.sample?.sha1 }}
+                </td>
                 <td class="py-6 px-4 text-left">
                   <router-link :to="{ name: ROUTE_NAMES.ANALYSIS, params: { uuid: item.uuid } }">{{
                     item.uuid
