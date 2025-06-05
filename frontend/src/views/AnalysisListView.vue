@@ -106,8 +106,8 @@ watch(
       <div v-if="!lastAnalyses" class="flex justify-center h-full pt-12">
         <p class="text-2xl">No result to display</p>
       </div>
-      <div v-if="lastAnalyses" class="flex justify-center h-full pt-12">
-        <div class="flex-col items-center">
+      <div v-if="lastAnalyses" class="flex justify-center h-screen pt-12 px-6">
+        <div class="flex-col items-center w-full overflow-x-auto" style="scrollbar-width: none">
           <table>
             <thead>
               <tr>

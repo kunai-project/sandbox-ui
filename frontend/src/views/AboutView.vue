@@ -6,7 +6,7 @@ import { config } from '@/config'
 <template>
   <PageView>
     <template v-slot:content>
-      <div class="flex items-center justify-center">
+      <div class="flex items-center justify-center px-6">
         <div class="flex-col max-w-lg pt-8">
           <div>
             <p class="text-6xl py-2">About</p>
