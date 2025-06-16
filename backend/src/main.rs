@@ -438,7 +438,8 @@ async fn analyses_search(
         .offset(offset)
         .all(&analyzer.db)
         .await
-        .map_err(|_| api_error!("failed to retrieve last analysis"))?
+        .inspect_err(|e| error!("failed to fetch analysis from db: {e}"))
+        .map_err(|_| api_error!("failed to fetch analysis from db"))?
         .into_iter()
         .map(Analysis::from)
         .map(|mut a| {
