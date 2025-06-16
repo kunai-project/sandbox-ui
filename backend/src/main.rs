@@ -368,6 +368,38 @@ async fn analyze_again(
 }
 
 #[derive(ToSchema, Serialize)]
+pub struct AnalyzerStatus {
+    running: u64,
+    queue_len: u64,
+    queue_cap: u64,
+}
+
+#[utoipa::path(
+    context_path = API_MOUNTPOINT,
+    responses(
+        (status = 200, description = "Analyzer's status", body = ApiResponse<AnalyzerStatus>),
+    ),
+    tag = "analyzer",
+    description = "Retrieves analyzer's status."
+)]
+#[get("/analyzer/status")]
+async fn analyzer_status(analyzer: &State<Arc<Mutex<Analyzer>>>) -> ApiResult<AnalyzerStatus> {
+    let analyzer = analyzer.lock().await;
+
+    let count_queued = DbAnalysis::find()
+        .filter(analysis::Column::Status.eq(AnalysisStatus::queued.to_string()))
+        .count(&analyzer.db)
+        .await
+        .unwrap_or_default();
+
+    Ok(ApiData::Some(AnalyzerStatus {
+        running: analyzer.running.len() as u64,
+        queue_len: count_queued,
+        queue_cap: analyzer.config.queue_size as u64,
+    }))
+}
+
+#[derive(ToSchema, Serialize)]
 pub struct Analysis {
     pub uuid: Uuid,
     pub date: DateTime<Utc>,
@@ -774,6 +806,7 @@ impl Command {
                     openapi,
                     analyze,
                     analyze_again,
+                    analyzer_status,
                     analyses_search,
                     analysis_status,
                     analysis_metadata,
@@ -840,6 +873,7 @@ impl Command {
 #[openapi(paths(
     analyze,
     analyze_again,
+    analyzer_status,
     analyses_search,
     analysis_status,
     analysis_metadata,

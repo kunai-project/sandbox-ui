@@ -299,15 +299,15 @@ impl Analysis {
     }
 }
 
-struct RunningAnalysis {
+pub(crate) struct RunningAnalysis {
     analysis: Analysis,
     handle: Option<tokio::task::JoinHandle<Result<(), AnalyzerError>>>,
     delete: bool,
 }
 
 pub struct Analyzer {
-    config: Config,
-    running: HashMap<Uuid, RunningAnalysis>,
+    pub(crate) config: Config,
+    pub(crate) running: HashMap<Uuid, RunningAnalysis>,
     pub(crate) db: DatabaseConnection,
 }
 
