@@ -60,7 +60,7 @@ RUN adduser -D sandbox-ui
 USER sandbox-ui
 
 # Install kunai-sandbox, version is hardcoded to avoid compatibility issues
-RUN uv tool install git+https://github.com/kunai-project/sandbox.git@v0.1.6
+RUN uv tool install git+https://github.com/kunai-project/sandbox.git@v0.1.10
 
 # Add uv tools path to PATH
 ENV PATH=$PATH:/home/sandbox-ui/.local/bin

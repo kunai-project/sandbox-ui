@@ -496,6 +496,8 @@ impl Analyzer {
                     .arg(analysis_dir)
                     .arg("--no-dropped")
                     .arg("--tmp")
+                    .arg("--tmp-suffix")
+                    .arg(analysis.analysis_uuid.to_string())
                     .arg("--graph")
                     .arg("--misp")
                     .arg("--sync-time")
