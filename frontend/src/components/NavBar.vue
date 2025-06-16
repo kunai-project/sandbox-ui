@@ -18,7 +18,7 @@ function handleInputChange(event: Event) {
 }
 
 async function handleEnter() {
-  router.push({ name: ROUTE_NAMES.ANALYSIS_LIST, query: { hash: search.value } })
+  router.push({ name: ROUTE_NAMES.ANALYSIS_LIST, query: { search: search.value } })
   search.value = null
 }
 </script>

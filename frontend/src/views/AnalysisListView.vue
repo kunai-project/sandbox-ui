@@ -3,15 +3,17 @@ import { onMounted, ref, watch } from 'vue'
 import PageView from './PageView.vue'
 import { ROUTE_NAMES } from '@/router'
 import { useRoute } from 'vue-router'
-import { apiUrl, api, fetchAPI, type Analysis } from '@/api'
+import { apiUrl, api, fetchAPI, type AnalysesSearchResult } from '@/api'
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
-const lastAnalyses = ref<[Analysis] | null>(null)
+const lastAnalyses = ref<AnalysesSearchResult | null>(null)
 const pageNum = ref<number>(0)
+const pageCount = ref<number>(0)
 const offset = ref<number>(0)
 const noMoreData = ref<boolean>(false)
 const limit: number = 10
 const route = useRoute()
+const hashRegex = /^(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64}|[0-9a-fA-F]{128})$/
 
 // Function to fetch data from the API
 async function fetchData(offset: number) {
@@ -20,38 +22,58 @@ async function fetchData(offset: number) {
   params.append('offset', offset.toString())
   params.append('limit', limit.toString())
 
-  const hash = route.query.hash as string | null
-  if (hash) {
-    params.append('hash', hash)
+  const searchTerm = route.query.search as string | null
+  if (searchTerm) {
+    if (hashRegex.test(searchTerm)) {
+      params.append('hash', searchTerm)
+    } else {
+      params.append('term', searchTerm)
+    }
   }
 
-  const analysis = await fetchAPI<[Analysis]>(
+  const asr = await fetchAPI<AnalysesSearchResult>(
     apiUrl(api.endpoints.analysesSearch, undefined, params),
   )
 
-  if (!analysis) {
+  if (!asr) {
     return
   }
 
-  if (!analysis.length && offset == 0) {
+  if (!asr.analyses.length && offset == 0) {
     lastAnalyses.value = null
     return
   }
 
-  if (analysis?.length > 0) {
-    lastAnalyses.value = analysis
-    noMoreData.value = false
-  } else {
+  if (asr?.analyses.length > 0) {
+    lastAnalyses.value = asr
+  }
+
+  // we update noMoreData
+  if (asr?.offset + asr?.limit >= asr?.total) {
     noMoreData.value = true
+  } else {
+    noMoreData.value = false
+  }
+
+  computePageNum()
+}
+
+function computePageNum() {
+  if (lastAnalyses.value) {
+    let min = Math.min(lastAnalyses.value.limit, lastAnalyses.value.analyses.length)
+
+    pageCount.value = Math.ceil(lastAnalyses.value.total / lastAnalyses.value.limit)
+    pageNum.value = Math.floor(
+      (pageCount.value * (lastAnalyses.value.offset + min)) / lastAnalyses.value.total,
+    )
   }
 }
 
 async function nextPage() {
-  if (lastAnalyses.value && lastAnalyses.value.length >= limit) {
+  if (lastAnalyses.value && lastAnalyses.value.analyses.length >= limit) {
     await fetchData(offset.value + limit)
     if (!noMoreData.value) {
       offset.value += limit
-      pageNum.value += 1
     }
   }
 }
@@ -59,7 +81,6 @@ async function nextPage() {
 async function previousPage() {
   if (lastAnalyses.value) {
     offset.value -= limit
-    pageNum.value -= 1
     await fetchData(offset.value)
   }
 }
@@ -119,7 +140,7 @@ watch(
               </tr>
             </thead>
             <tbody class="divide-y">
-              <tr v-for="(item, index) in lastAnalyses" :key="index">
+              <tr v-for="(item, index) in lastAnalyses.analyses" :key="index">
                 <td class="py-6 px-4 text-left font-semibold">{{ convertDate(item.date) }}</td>
                 <td class="py-6 px-4 text-left text-wrap max-w-40 truncate">
                   {{ item.submission_name }}
@@ -137,19 +158,23 @@ watch(
             </tbody>
           </table>
 
-          <div class="flex justify-center pt-4 pb-20">
-            <div v-if="pageNum != 0">
+          <div class="flex justify-center pt-4">
+            <div v-if="pageNum != 0 && pageCount > 1">
               <button @click="previousPage" class="rounded-lg px-2 py-2 btn-primary">
                 <ChevronLeftIcon class="h-6" />
               </button>
             </div>
 
-            <div v-if="lastAnalyses?.length === limit && !noMoreData" class="px-2">
+            <div class="px-1"></div>
+
+            <div v-if="lastAnalyses?.analyses.length === limit && !noMoreData">
               <button @click="nextPage" class="rounded-lg px-2 py-2 btn-primary">
                 <ChevronRightIcon class="h-6" />
               </button>
             </div>
           </div>
+
+          <div class="flex justify-center pt-4 pb-20">Page {{ pageNum }} / {{ pageCount }}</div>
         </div>
       </div>
     </template>

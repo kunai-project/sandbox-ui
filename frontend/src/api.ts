@@ -25,6 +25,13 @@ export interface Analysis {
   submission_name?: string | null
 }
 
+export interface AnalysesSearchResult {
+  analyses: Analysis[]
+  limit: number
+  offset: number
+  total: number
+}
+
 // Define the Metadata interface
 export interface Metadata {
   md5: string

@@ -389,27 +389,38 @@ impl From<(analysis::Model, Vec<sample::Model>)> for Analysis {
     }
 }
 
+#[derive(Serialize, ToSchema)]
+pub struct AnalysesSearchResult {
+    pub analyses: Vec<Analysis>,
+    pub limit: u64,
+    pub offset: u64,
+    pub total: u64,
+}
+
 #[utoipa::path(
     context_path = API_MOUNTPOINT,
     params(
         ("limit" = Option<u64>, Query, description = "Limit the number of results, default is 25"),
         ("offset" = Option<u64>, Query, description = "Offset for pagination, default is 0"),
-        ("hash" = Option<String>, Query, description = "Optional hash to filter results by sample MD5, SHA1, SHA256, or SHA512")
+        ("hash" = Option<String>, Query, description = "Optional hash to filter results by sample MD5, SHA1, SHA256, or SHA512"),
+        ("status" = Option<String>, Query, description = "Search by analysis status"),
+        ("term" = Option<String>, Query, description = "Search a term in submission name"),
     ),
     responses(
-        (status = 200, description = "List of analysis items", body = ApiResponse<Vec<Analysis>>),
+        (status = 200, description = "List of analysis items", body = ApiResponse<AnalysesSearchResult>),
     ),
     tag = "analyses",
     description = "Retrieves a list of analysis items with optional pagination and hash filtering."
 )]
-#[get("/analyses/search?<limit>&<offset>&<hash>&<status>")]
+#[get("/analyses/search?<limit>&<offset>&<hash>&<status>&<term>")]
 async fn analyses_search(
     limit: Option<u64>,
     offset: Option<u64>,
     hash: Option<&str>,
+    term: Option<&str>,
     status: Option<&str>,
     analyzer: &State<Arc<Mutex<Analyzer>>>,
-) -> ApiResult<Vec<Analysis>> {
+) -> ApiResult<AnalysesSearchResult> {
     let limit = limit.unwrap_or(25).clamp(0, 100);
     let offset = offset.unwrap_or_default();
 
@@ -427,13 +438,25 @@ async fn analyses_search(
         )
     }
 
+    if let Some(term) = term {
+        query = query.filter(analysis::Column::SubmissionName.contains(term))
+    }
+
     if let Some(status) = status {
         query = query.filter(analysis::Column::Status.eq(status))
     }
 
     let analyzer = analyzer.lock().await;
 
-    let out: Vec<Analysis> = query
+    let count = query
+        .clone()
+        .all(&analyzer.db)
+        .await
+        .inspect_err(|e| error!("failed to count analysis from db: {e}"))
+        .map_err(|_| api_error!("failed to count analysis from db"))?
+        .len();
+
+    let it = query
         .limit(limit)
         .offset(offset)
         .all(&analyzer.db)
@@ -447,10 +470,16 @@ async fn analyses_search(
                 a.status = AnalysisStatus::running;
             }
             a
-        })
-        .collect();
+        });
 
-    Ok(ApiData::Some(out))
+    let res = AnalysesSearchResult {
+        analyses: it.collect(),
+        limit,
+        offset,
+        total: count as u64,
+    };
+
+    Ok(ApiData::Some(res))
 }
 
 #[utoipa::path(
