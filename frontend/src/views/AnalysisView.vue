@@ -255,7 +255,7 @@ onBeforeUnmount(() => {
                       <template v-slot:content>
                         <a
                           :href="apiUrl(api.endpoints.analysisLogs, { uuid: props.uuid })"
-                          :download="uuid + '.jsonl.gz'"
+                          :download="'kunai-logs-' + uuid + '.jsonl.gz'"
                         >
                           <ArrowDownTrayIcon class="h-6" />
                         </a>
@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
                       <template v-slot:content>
                         <a
                           :href="apiUrl(api.endpoints.analysisMispEvent, { uuid: props.uuid })"
-                          :download="uuid + '.json'"
+                          :download="'misp-event-' + uuid + '.json'"
                         >
                           <ArrowDownTrayIcon class="h-6" />
                         </a>
@@ -285,7 +285,7 @@ onBeforeUnmount(() => {
                       <template v-slot:content>
                         <a
                           :href="apiUrl(api.endpoints.analysisGraph, { uuid: props.uuid })"
-                          :download="uuid + '.svg'"
+                          :download="'analysis-graph' + uuid + '.svg'"
                         >
                           <ArrowDownTrayIcon class="h-6" />
                         </a>
