@@ -14,7 +14,7 @@ use std::{
     process::Command,
     str::FromStr,
     sync::Arc,
-    time::Duration,
+    time::{self, Duration},
 };
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
@@ -452,6 +452,10 @@ impl Analyzer {
 
             let analysis_dir = analysis.analysis_dir.join("analysis");
 
+            let analysis_duration = time::Duration::from_secs(self.config.analysis_duration_sec);
+
+            let max_analysis_duration = time::Duration::from_secs(self.config.analysis_timeout_sec);
+
             let analyzer_stderr_path = a.analysis_dir.join("sandbox.stderr");
 
             let analyzer_stdout = std::fs::File::create(a.analysis_dir.join("sandbox.stdout"))
@@ -489,7 +493,7 @@ impl Analyzer {
                     // we need to force re-analysis in case we stopped app while analysis was running
                     .arg("--force")
                     .arg("-t")
-                    .arg("60")
+                    .arg(analysis_duration.as_secs().to_string())
                     .arg("--config")
                     .arg(sbx_config_path)
                     .arg("--output-dir")
@@ -508,8 +512,18 @@ impl Analyzer {
                     .stderr(analyzer_stderr)
                     .spawn()?;
 
+                let mut wait_time = Duration::from_secs(0);
+                let step = Duration::from_millis(100);
                 while let Ok(None) = child.try_wait() {
+                    if wait_time > max_analysis_duration {
+                        rocket::warn!("timing out analysis {}", analysis.analysis_uuid);
+                        child.kill().map_err(|e| {
+                            AnalyzerError::msg(format!("failed at killing sandbox: {e}"))
+                        })?;
+                        break;
+                    }
                     tokio::time::sleep(Duration::from_millis(100)).await;
+                    wait_time += step;
                 }
 
                 let status = child.wait()?;

@@ -12,7 +12,7 @@ use crate::analyzer::Analysis;
 use anyhow::anyhow;
 use serde::de::Error;
 
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub(crate) struct Config {
     pub(crate) database: PathBuf,
     pub(crate) kunai_sandbox_exe: PathBuf,
@@ -21,9 +21,29 @@ pub(crate) struct Config {
     pub(crate) data_dir: PathBuf,
     pub(crate) queue_size: usize,
     pub(crate) max_running: usize,
+    pub(crate) analysis_duration_sec: u64,
+    pub(crate) analysis_timeout_sec: u64,
     pub(crate) rocket: rocket::Config,
     #[serde(skip)]
     pub(crate) sandboxes: Vec<Sandbox>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            database: PathBuf::default(),
+            kunai_sandbox_exe: PathBuf::default(),
+            sandboxes_config: HashMap::default(),
+            default_sandbox_name: String::default(),
+            data_dir: PathBuf::default(),
+            queue_size: 16,
+            max_running: 4,
+            analysis_duration_sec: 60,
+            analysis_timeout_sec: 600,
+            rocket: rocket::Config::default(),
+            sandboxes: Vec::default(),
+        }
+    }
 }
 
 impl Config {
