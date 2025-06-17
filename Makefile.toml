@@ -13,7 +13,7 @@ args = ["run", "dev"]
 [tasks.run]
 workspace = false
 command = "cargo"
-args = ["run-app"]
+args = ["run-app", "run"]
 
 [tasks.dev-backend]
 workspace = false
