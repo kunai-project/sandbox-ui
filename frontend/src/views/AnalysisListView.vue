@@ -1,35 +1,47 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import PageView from './PageView.vue'
-import { ROUTE_NAMES } from '@/router'
+import router, { ROUTE_NAMES } from '@/router'
 import { useRoute } from 'vue-router'
 import { apiUrl, api, fetchAPI, type AnalysesSearchResult } from '@/api'
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
 const lastAnalyses = ref<AnalysesSearchResult | null>(null)
+const initDone = ref<boolean>(false)
 const pageNum = ref<number>(0)
 const pageCount = ref<number>(0)
-const offset = ref<number>(0)
 const noMoreData = ref<boolean>(false)
+const searchTerm = ref<string | null>(null)
 const limit: number = 10
 const route = useRoute()
 const hashRegex = /^(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64}|[0-9a-fA-F]{128})$/
 
 // Function to fetch data from the API
-async function fetchData(offset: number) {
+async function initialize() {
+  let offset: number = 0
+
+  const page = route.query.page as number | null
+
+  if (page) {
+    if (page > 0) {
+      offset = limit * (page - 1)
+    }
+  }
+
+  searchTerm.value = route.query.search as string | null
+
   const params = new URLSearchParams()
+
+  if (searchTerm.value) {
+    if (hashRegex.test(searchTerm.value)) {
+      params.append('hash', searchTerm.value)
+    } else {
+      params.append('term', searchTerm.value)
+    }
+  }
 
   params.append('offset', offset.toString())
   params.append('limit', limit.toString())
-
-  const searchTerm = route.query.search as string | null
-  if (searchTerm) {
-    if (hashRegex.test(searchTerm)) {
-      params.append('hash', searchTerm)
-    } else {
-      params.append('term', searchTerm)
-    }
-  }
 
   const asr = await fetchAPI<AnalysesSearchResult>(
     apiUrl(api.endpoints.analysesSearch, undefined, params),
@@ -56,6 +68,8 @@ async function fetchData(offset: number) {
   }
 
   computePageNum()
+
+  initDone.value = true
 }
 
 function computePageNum() {
@@ -70,26 +84,20 @@ function computePageNum() {
 }
 
 async function nextPage() {
-  if (lastAnalyses.value && lastAnalyses.value.analyses.length >= limit) {
-    await fetchData(offset.value + limit)
-    if (!noMoreData.value) {
-      offset.value += limit
-    }
+  if (!noMoreData.value) {
+    router.push({
+      name: ROUTE_NAMES.ANALYSIS_LIST,
+      query: { page: pageNum.value + 1, search: searchTerm.value },
+    })
   }
 }
 
 async function previousPage() {
-  if (lastAnalyses.value) {
-    offset.value -= limit
-    await fetchData(offset.value)
-  }
-}
-
-function reset() {
-  offset.value = 0
-  lastAnalyses.value = null
-  pageNum.value = 0
-  noMoreData.value = false
+  if (pageNum.value > 1)
+    router.push({
+      name: ROUTE_NAMES.ANALYSIS_LIST,
+      query: { page: pageNum.value - 1, search: searchTerm.value },
+    })
 }
 
 function convertDate(timestamp: string): string {
@@ -109,14 +117,13 @@ function convertDate(timestamp: string): string {
 
 // Fetch data when the component is mounted
 onMounted(async () => {
-  await fetchData(offset.value) // Initial fetch
+  await initialize() // Initial fetch
 })
 
 watch(
   () => route.query,
   () => {
-    reset()
-    fetchData(offset.value)
+    initialize()
   },
 )
 </script>
@@ -124,7 +131,7 @@ watch(
 <template>
   <PageView>
     <template v-slot:content>
-      <div v-if="!lastAnalyses" class="flex justify-center h-full pt-12">
+      <div v-if="!lastAnalyses && initDone" class="flex justify-center h-full pt-12">
         <p class="text-2xl">No result to display</p>
       </div>
       <div v-if="lastAnalyses" class="flex justify-center h-screen pt-12 px-6">
