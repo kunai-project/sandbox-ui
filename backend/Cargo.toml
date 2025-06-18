@@ -32,6 +32,7 @@ utoipa = { version = "5.3.1", features = [
 ] }
 figment = { version = "0.10.19", features = ["yaml"] }
 fs-walk = "0.1"
+nix = { version = "0.30.1", features = ["signal"] }
 
 [profile.release]
 lto = true

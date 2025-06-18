@@ -2,6 +2,10 @@ use crate::{Config, entities::analysis, entities::prelude::Analysis as DbAnalysi
 use chrono::{DateTime, Utc};
 use log::error;
 use md5::{Digest, Md5};
+use nix::{
+    sys::signal::{self, Signal},
+    unistd::Pid,
+};
 use sea_orm::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
 use sha1::Sha1;
@@ -517,12 +521,36 @@ impl Analyzer {
                 while let Ok(None) = child.try_wait() {
                     if wait_time > max_analysis_duration {
                         rocket::warn!("timing out analysis {}", analysis.analysis_uuid);
-                        child.kill().map_err(|e| {
-                            AnalyzerError::msg(format!("failed at killing sandbox: {e}"))
-                        })?;
+                        // Get the process ID of the child
+                        let pid = Pid::from_raw(child.id() as i32);
+
+                        // Send SIGTERM to the child process
+                        let _ = signal::kill(pid, Signal::SIGTERM).inspect_err(|e| {
+                            error!(
+                                "failed at sending SIGTERM to sandbox analysis={}: {e}",
+                                analysis.analysis_uuid
+                            )
+                        });
+
+                        let mut sigterm_wait = Duration::from_secs(0);
+                        // we wait SIGTERM to be handled
+                        while let Ok(None) = child.try_wait() {
+                            if sigterm_wait > Duration::from_secs(5) {
+                                // we send a SIGKILL to the process
+                                child.kill().map_err(|e| {
+                                    AnalyzerError::msg(format!(
+                                        "failed at killing sandbox analysis={}: {e}",
+                                        analysis.analysis_uuid
+                                    ))
+                                })?;
+                            }
+                            tokio::time::sleep(step).await;
+                            sigterm_wait += step
+                        }
+
                         break;
                     }
-                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    tokio::time::sleep(step).await;
                     wait_time += step;
                 }
 
