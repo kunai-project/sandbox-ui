@@ -240,7 +240,7 @@ async fn analyze(
 
     upload
         .file
-        .copy_to(&analysis.sample_path())
+        .move_copy_to(&analysis.sample_path())
         .await
         .inspect_err(|e| error!("failed to copy file: {e}"))
         .map_err(|_| api_error!("failed to copy file"))?;
