@@ -429,6 +429,34 @@ pub struct AnalysesSearchResult {
     pub total: u64,
 }
 
+fn build_analysis_filter(
+    hash: Option<&str>,
+    term: Option<&str>,
+    status: Option<&str>,
+) -> Condition {
+    let mut cond = Condition::all();
+
+    if let Some(hash) = hash {
+        cond = cond.add(
+            Condition::any()
+                .add(sample::Column::Md5.eq(hash))
+                .add(sample::Column::Sha1.eq(hash))
+                .add(sample::Column::Sha256.eq(hash))
+                .add(sample::Column::Sha512.eq(hash)),
+        );
+    }
+
+    if let Some(term) = term {
+        cond = cond.add(analysis::Column::SubmissionName.contains(term));
+    }
+
+    if let Some(status) = status {
+        cond = cond.add(analysis::Column::Status.eq(status));
+    }
+
+    cond
+}
+
 #[utoipa::path(
     context_path = API_MOUNTPOINT,
     params(
@@ -456,39 +484,23 @@ async fn analyses_search(
     let limit = limit.unwrap_or(25).clamp(0, 100);
     let offset = offset.unwrap_or_default();
 
-    let mut query = DbAnalysis::find()
+    let query = DbAnalysis::find()
         .order_by(analysis::Column::Date, Order::Desc)
         .find_with_related(DbSample);
 
-    if let Some(hash) = hash {
-        query = query.filter(
-            Condition::any()
-                .add(sample::Column::Md5.eq(hash))
-                .add(sample::Column::Sha1.eq(hash))
-                .add(sample::Column::Sha256.eq(hash))
-                .add(sample::Column::Sha512.eq(hash)),
-        )
-    }
-
-    if let Some(term) = term {
-        query = query.filter(analysis::Column::SubmissionName.contains(term))
-    }
-
-    if let Some(status) = status {
-        query = query.filter(analysis::Column::Status.eq(status))
-    }
-
     let analyzer = analyzer.lock().await;
 
-    let count = query
-        .clone()
-        .all(&analyzer.db)
+    let cond = build_analysis_filter(hash, term, status);
+
+    let count = DbAnalysis::find()
+        .join(JoinType::InnerJoin, analysis::Relation::Sample.def())
+        .filter(cond.clone())
+        .count(&analyzer.db)
         .await
-        .inspect_err(|e| error!("failed to count analysis from db: {e}"))
-        .map_err(|_| api_error!("failed to count analysis from db"))?
-        .len();
+        .unwrap();
 
     let it = query
+        .filter(cond)
         .limit(limit)
         .offset(offset)
         .all(&analyzer.db)
