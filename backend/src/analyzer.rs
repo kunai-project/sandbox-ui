@@ -1,18 +1,18 @@
 use crate::{Config, entities::analysis, entities::prelude::Analysis as DbAnalysis};
 use chrono::{DateTime, Utc};
-use log::error;
 use md5::{Digest, Md5};
 use nix::{
     sys::signal::{self, Signal},
     unistd::Pid,
 };
+use pure_magic::MagicDb;
 use sea_orm::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
 use sha1::Sha1;
 use sha2::{Sha256, Sha512};
 use std::{
     collections::HashMap,
-    io::{self},
+    io::{self, Read, Seek},
     net::IpAddr,
     path::PathBuf,
     process::Command,
@@ -21,8 +21,8 @@ use std::{
     time::{self, Duration},
 };
 use thiserror::Error;
-use tokio::io::AsyncReadExt;
 use tokio::sync::Mutex;
+use tokio::task;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
@@ -128,32 +128,41 @@ pub struct Metadata {
         deserialize_with = "deserialize_datetime"
     )]
     pub(crate) analysis_date: Option<DateTime<Utc>>,
-    pub(crate) magic: Option<String>,
     pub(crate) md5: String,
     pub(crate) sha1: String,
     pub(crate) sha256: String,
     pub(crate) sha512: String,
+    pub(crate) magic: Option<String>,
     pub(crate) size: u64,
 }
 
 impl Metadata {
-    fn from_reader<R: io::Read>(mut reader: R) -> io::Result<Self> {
+    fn from_reader<R: io::Read + io::Seek>(reader: R) -> io::Result<Self> {
         let mut md5 = Md5::new();
         let mut sha1 = Sha1::new();
         let mut sha256 = Sha256::new();
         let mut sha512 = Sha512::new();
         let mut size = 0u64;
 
+        let mut cache = MagicDb::optimal_lazy_cache(reader)?;
+
+        let db = magic_db::global().map_err(io::Error::other)?;
+        let magic = db
+            .first_magic_with_lazy_cache(&mut cache, None)
+            .ok()
+            .map(|m| m.message());
+        let _ = cache.seek(io::SeekFrom::Start(0))?;
+
         let mut buf = [0; 4096];
 
-        let mut n = reader.read(&mut buf[..])?;
+        let mut n = cache.read(&mut buf[..])?;
         while n > 0 {
             md5.update(&buf[..n]);
             sha1.update(&buf[..n]);
             sha256.update(&buf[..n]);
             sha512.update(&buf[..n]);
             size = size.wrapping_add(n as u64);
-            n = reader.read(&mut buf[..])?;
+            n = cache.read(&mut buf[..])?;
         }
 
         Ok(Self {
@@ -161,35 +170,7 @@ impl Metadata {
             sha1: hex::encode(sha1.finalize()),
             sha256: hex::encode(sha256.finalize()),
             sha512: hex::encode(sha512.finalize()),
-            size,
-            ..Default::default()
-        })
-    }
-
-    async fn from_async_reader<R: tokio::io::AsyncRead + Unpin>(mut reader: R) -> io::Result<Self> {
-        let mut md5 = Md5::new();
-        let mut sha1 = Sha1::new();
-        let mut sha256 = Sha256::new();
-        let mut sha512 = Sha512::new();
-        let mut size = 0u64;
-
-        let mut buf = [0; 4096];
-
-        let mut n = reader.read(&mut buf[..]).await?;
-        while n > 0 {
-            md5.update(&buf[..n]);
-            sha1.update(&buf[..n]);
-            sha256.update(&buf[..n]);
-            sha512.update(&buf[..n]);
-            size = size.wrapping_add(n as u64);
-            n = reader.read(&mut buf[..]).await?;
-        }
-
-        Ok(Self {
-            md5: hex::encode(md5.finalize()),
-            sha1: hex::encode(sha1.finalize()),
-            sha256: hex::encode(sha256.finalize()),
-            sha512: hex::encode(sha512.finalize()),
+            magic,
             size,
             ..Default::default()
         })
@@ -202,21 +183,15 @@ impl Metadata {
 
         Ok(Self {
             submission_name: s.submission_name.clone(),
-            magic: None,
             ..Self::from_reader(f)?
         })
     }
 
     async fn from_analysis_async(s: &Analysis) -> tokio::io::Result<Self> {
-        let p = s.sample_path();
-
-        let f = tokio::fs::File::open(p).await?;
-
-        Ok(Self {
-            submission_name: s.submission_name.clone(),
-            magic: None,
-            ..Self::from_async_reader(f).await?
-        })
+        let s = s.clone();
+        // we use from_analysis here as pure-magic doesn't
+        // have yet a async APIs
+        task::spawn_blocking(move || Self::from_analysis(&s)).await?
     }
 
     fn analysis_date_now(mut self) -> Self {
