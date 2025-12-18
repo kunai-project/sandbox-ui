@@ -1,3 +1,5 @@
+#![deny(dead_code)]
+#![deny(unused_imports)]
 #[macro_use]
 extern crate rocket;
 
