@@ -9,7 +9,7 @@ import { api, apiRequest, fetchAPI, type Analysis } from '@/api'
 
 const sandboxListBox = ref<InstanceType<typeof SandboxListbox> | null>(null)
 
-const lastAnalysisUuid = ref<Analysis | null>(null)
+const lastAnalysis = ref<Analysis | null>(null)
 const file = ref<File | null>(null)
 const previewUrl = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -28,13 +28,13 @@ async function handleFileChange(event: Event) {
   if (target.files && target.files[0]) {
     file.value = target.files[0]
     // file.value cannot be null here
-    lastAnalysisUuid.value = await lastAnalysisByHash(await sha512(file.value))
+    lastAnalysis.value = await lastAnalysisByHash(await sha512(file.value))
   }
 }
 
 function goToLastAnalysis() {
-  if (lastAnalysisUuid.value) {
-    router.push({ name: ROUTE_NAMES.ANALYSIS, params: { uuid: lastAnalysisUuid.value.uuid } })
+  if (lastAnalysis.value) {
+    router.push({ name: ROUTE_NAMES.ANALYSIS, params: { uuid: lastAnalysis.value.uuid } })
   }
 }
 
@@ -94,9 +94,8 @@ function resetForm() {
 
       <div class="flex flex-col items-center justify-center pt-4">
         <button
-          @click="postAnalysis"
           :disabled="!file"
-          :hidden="!file || lastAnalysisUuid != null"
+          :hidden="!file || lastAnalysis != null"
           class="font-medium py-2 px-10 rounded-lg btn-primary"
         >
           Analyze
@@ -104,20 +103,19 @@ function resetForm() {
       </div>
     </form>
 
-    <div v-if="lastAnalysisUuid" class="flex w-xs items-center justify-center pt-3">
+    <div v-if="lastAnalysis" class="flex w-xs items-center justify-center pt-3">
       <button
         @click="goToLastAnalysis"
-        :disabled="!lastAnalysisUuid"
-        :hidden="!lastAnalysisUuid"
+        :disabled="!lastAnalysis"
+        :hidden="!lastAnalysis"
         class="font-medium w-1/2 h-full py-4 px-2 rounded-xl btn-primary"
       >
         View Last Analysis
       </button>
       <div class="px-3"></div>
       <button
-        @click="postAnalysis"
-        :disabled="!lastAnalysisUuid"
-        :hidden="!lastAnalysisUuid"
+        :disabled="!lastAnalysis"
+        :hidden="!lastAnalysis"
         class="font-medium w-1/2 h-full py-4 px-2 rounded-xl btn-primary"
       >
         Re-analyze
