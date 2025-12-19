@@ -1,4 +1,4 @@
-import { api, apiRequest, fetchAPI, type Analysis } from './api'
+import { api, apiRequest, fetchAPI, type Analysis, type AnalysesSearchResult } from './api'
 
 export async function lastAnalysisByHash(hash: string | null): Promise<Analysis | null> {
   if (!hash) return null
@@ -6,7 +6,7 @@ export async function lastAnalysisByHash(hash: string | null): Promise<Analysis 
   const params = new URLSearchParams()
   params.append('hash', hash)
 
-  const search_res = await fetchAPI<[Analysis]>(
+  const search_res = await fetchAPI<AnalysesSearchResult>(
     apiRequest(api.endpoints.analysesSearch, undefined, params),
   )
 
@@ -14,9 +14,11 @@ export async function lastAnalysisByHash(hash: string | null): Promise<Analysis 
     return null
   }
 
-  if (!search_res.length) {
+  const analyses = search_res.analyses
+
+  if (!analyses.length) {
     return null
   }
 
-  return search_res[0]
+  return analyses[0]
 }
