@@ -206,7 +206,7 @@ export async function fetchAPI<T>(input: RequestInfo | URL, init?: RequestInit):
         return data
       }
     } else {
-      logApiError(`unexpected status from search API: ${response.status}`, input, init)
+      logApiError(`unexpected status from API: ${response.status}`, input, init)
     }
   } catch (error) {
     logApiError(`caught exception while querying API: ${error}`, input, init)
